@@ -5,55 +5,54 @@ import (
 	"github.com/stretchr/testify/assert"
 	"kata/cqrs_booking/room_query"
 	"kata/cqrs_booking/room_read_registry"
-	"time"
+	"kata/cqrs_booking/utils"
 )
 
 type freeRoomFeature struct {
-	freeRooms                []room_read_registry.Room
-	inMemoryRoomReadRegistry *room_read_registry.InMemoryRoomReadRegistry
-	roomQueryService         *room_query.RoomQueryService
+	freeRooms        []room_read_registry.Room
+	roomQueryService *room_query.RoomQueryService
 }
 
-func (f *freeRoomFeature) roomWasBookedAt(room string, bookings *godog.Table) error {
-	f.inMemoryRoomReadRegistry = room_read_registry.NewInMemoryRoomReadRegistry()
-	f.inMemoryRoomReadRegistry.AddRoom(room)
+func (f *freeRoomFeature) GivenRoomWasBooked(room string, bookings *godog.Table) error {
+	inMemoryRoomReadRegistry := room_read_registry.NewInMemoryRoomReadRegistry()
+	inMemoryRoomReadRegistry.AddRoom(room)
 
 	for _, booking := range bookings.Rows[1:] {
-		arrival := booking.Cells[0].Value
-		departure := booking.Cells[1].Value
-		arrivalDate, _ := time.Parse("2006-1-2", arrival)
-		departureDate, _ := time.Parse("2006-1-2", departure)
-		f.inMemoryRoomReadRegistry.BookRoom(room, arrivalDate, departureDate)
+		arrivalDateString := booking.Cells[0].Value
+		departureDateString := booking.Cells[1].Value
+		arrivalDate := utils.DateFor(arrivalDateString)
+		departureDate := utils.DateFor(departureDateString)
+		inMemoryRoomReadRegistry.BookRoom(room, arrivalDate, departureDate)
 	}
-	f.roomQueryService = room_query.NewRoomQueryService(f.inMemoryRoomReadRegistry)
+	f.roomQueryService = room_query.NewRoomQueryService(inMemoryRoomReadRegistry)
 	return nil
 }
 
-func (f *freeRoomFeature) getFreeRoomsAt(arrival, departure string) error {
-	arrivalDate, _ := time.Parse("2006-1-2", arrival)
-	departureDate, _ := time.Parse("2006-1-2", departure)
+func (f *freeRoomFeature) WhenGetFreeRooms(arrivalDateString, departureDateString string) error {
+	arrivalDate := utils.DateFor(arrivalDateString)
+	departureDate := utils.DateFor(departureDateString)
 	f.freeRooms = f.roomQueryService.FreeRooms(arrivalDate, departureDate)
 	return nil
 }
 
-func (f *freeRoomFeature) theFreeRoomsContainsRoom(room string) error {
+func (f *freeRoomFeature) FreeRoomsContainsRoom(room string) error {
 	return assertExpectedAndActual(assert.Contains, f.freeRooms, room_read_registry.NewRoom(room), "Expected free rooms contain room %s", room)
 }
 
-func (f *freeRoomFeature) theFreeRoomsNotContainsRoom(room string) error {
+func (f *freeRoomFeature) FreeRoomsNotContainsRoom(room string) error {
 	return assertExpectedAndActual(assert.NotContains, f.freeRooms, room_read_registry.NewRoom(room), "Expected free rooms not contain room %s", room)
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	freeRoomFeature := &freeRoomFeature{}
-	ctx.Step(`^the (.*) room was booked as the following:$`, freeRoomFeature.roomWasBookedAt)
-	ctx.Step(`^get free rooms arrival at (\d+-\d+-\d+) and departure at (\d+-\d+-\d+)$`, freeRoomFeature.getFreeRoomsAt)
-	ctx.Step(`^the free rooms should contains the (.*) room$`, freeRoomFeature.theFreeRoomsContainsRoom)
-	ctx.Step(`^the free rooms should not contains the (.*) room$`, freeRoomFeature.theFreeRoomsNotContainsRoom)
+	ctx.Step(`^the (.*) room was booked as the following:$`, freeRoomFeature.GivenRoomWasBooked)
+	ctx.Step(`^get free rooms arrival at (\d+-\d+-\d+) and departure at (\d+-\d+-\d+)$`, freeRoomFeature.WhenGetFreeRooms)
+	ctx.Step(`^the free rooms should contains the (.*) room$`, freeRoomFeature.FreeRoomsContainsRoom)
+	ctx.Step(`^the free rooms should not contains the (.*) room$`, freeRoomFeature.FreeRoomsNotContainsRoom)
 
 	bookRoomFeature := &bookRoomFeature{}
-	ctx.Step(`^the (.*) room$`, bookRoomFeature.givenRoom)
-	ctx.Step(`^the (.*) room is free arrival at (\d+-\d+-\d+) and departure at (\d+-\d+-\d+)$`, bookRoomFeature.theRoomIsFree)
-	ctx.Step(`^(.*) book the (.*) room arrival at (\d+-\d+-\d+) and departure at (\d+-\d+-\d+)$`, bookRoomFeature.bookRoom)
-	ctx.Step(`^the (.*) room is not free arrival at (\d+-\d+-\d+) and departure at (\d+-\d+-\d+)$`, bookRoomFeature.theRoomIsNotFree)
+	ctx.Step(`^the (.*) room$`, bookRoomFeature.GivenRoom)
+	ctx.Step(`^the (.*) room is free arrival at (\d+-\d+-\d+) and departure at (\d+-\d+-\d+)$`, bookRoomFeature.RoomIsFree)
+	ctx.Step(`^(.*) book the (.*) room arrival at (\d+-\d+-\d+) and departure at (\d+-\d+-\d+)$`, bookRoomFeature.BookRoom)
+	ctx.Step(`^the (.*) room is not free arrival at (\d+-\d+-\d+) and departure at (\d+-\d+-\d+)$`, bookRoomFeature.RoomIsNotFree)
 }

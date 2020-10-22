@@ -5,6 +5,7 @@ import (
 	. "github.com/onsi/gomega"
 	"kata/cqrs_booking/room_query"
 	"kata/cqrs_booking/room_read_registry"
+	"kata/cqrs_booking/utils"
 	"time"
 )
 
@@ -20,7 +21,6 @@ func (srr *StubRoomReadRegistry) FreeRooms(arrival, departure time.Time) []room_
 	}
 }
 
-
 func NewStubRoomReadRegistry() *StubRoomReadRegistry {
 	return &StubRoomReadRegistry{}
 }
@@ -31,9 +31,9 @@ var _ = Describe("when query free rooms", func() {
 		rq := room_query.NewRoomQueryService(NewStubRoomReadRegistry())
 
 		// When
-		arrival, _ := time.Parse("2006-1-2", "2020-10-20")
-		departure, _ := time.Parse("2006-1-2", "2020-10-21")
-		freeRooms := rq.FreeRooms(arrival, departure)
+		arrivalDate := utils.DateFor("2020-10-20")
+		departureDate := utils.DateFor("2020-10-21")
+		freeRooms := rq.FreeRooms(arrivalDate, departureDate)
 
 		// Then
 		Expect(freeRooms).Should(ConsistOf(room_read_registry.NewRoom("shanghai")))

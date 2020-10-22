@@ -4,7 +4,7 @@ import (
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo"
 	"kata/cqrs_booking/room_command"
-	"time"
+	"kata/cqrs_booking/utils"
 )
 
 var _ = Describe("when book room", func() {
@@ -25,8 +25,8 @@ var _ = Describe("when book room", func() {
 	})
 
 	It("notify room read registry and room write registry", func() {
-		arrivalDate, _ := time.Parse("2006-1-2", "2020-10-21")
-		departureDate, _ := time.Parse("2006-1-2", "2020-10-21")
+		arrivalDate := utils.DateFor("2020-10-21")
+		departureDate := utils.DateFor("2020-10-21")
 		booking := room_command.NewBooking("will", "shanghai", arrivalDate, departureDate)
 		roomCommandService := room_command.NewRoomCommandService(mockRoomWriteRegistry, mockRoomReadRegistry)
 

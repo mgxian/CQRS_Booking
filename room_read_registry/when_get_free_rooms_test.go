@@ -4,6 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"kata/cqrs_booking/room_read_registry"
+	"kata/cqrs_booking/utils"
 	"time"
 )
 
@@ -14,11 +15,11 @@ var _ = Describe("when get free rooms", func() {
 		r.AddRoom("shanghai")
 
 		// When
-		arrival, _ := time.Parse("2006-1-2", "2020-10-20")
-		departure, _ := time.Parse("2006-1-2", "2020-10-21")
+		arrivalDate := utils.DateFor("2020-10-20")
+		departureDate := utils.DateFor("2020-10-21")
 		oneDay := time.Hour * 24
-		r.BookRoom("shanghai", arrival, departure)
-		freeRooms := r.FreeRooms(arrival.Add(oneDay), departure.Add(oneDay))
+		r.BookRoom("shanghai", arrivalDate, departureDate)
+		freeRooms := r.FreeRooms(arrivalDate.Add(oneDay), departureDate.Add(oneDay))
 
 		// Then
 		Expect(freeRooms).Should(ConsistOf(room_read_registry.NewRoom("shanghai")))
@@ -30,10 +31,10 @@ var _ = Describe("when get free rooms", func() {
 		r.AddRoom("shanghai")
 
 		// When
-		arrival, _ := time.Parse("2006-1-2", "2020-10-20")
-		departure, _ := time.Parse("2006-1-2", "2020-10-21")
-		r.BookRoom("shanghai", arrival, departure)
-		freeRooms := r.FreeRooms(arrival, departure)
+		arrivalDate := utils.DateFor("2020-10-20")
+		departureDate := utils.DateFor("2020-10-21")
+		r.BookRoom("shanghai", arrivalDate, departureDate)
+		freeRooms := r.FreeRooms(arrivalDate, departureDate)
 
 		// Then
 		Expect(freeRooms).ShouldNot(ConsistOf(room_read_registry.NewRoom("shanghai")))
@@ -45,12 +46,12 @@ var _ = Describe("when get free rooms", func() {
 		r.AddRoom("shanghai")
 
 		// When
-		arrival, _ := time.Parse("2006-1-2", "2020-10-20")
-		departure, _ := time.Parse("2006-1-2", "2020-10-23")
-		r.BookRoom("shanghai", arrival, departure)
+		arrivalDate := utils.DateFor("2020-10-20")
+		departureDate := utils.DateFor("2020-10-23")
+		r.BookRoom("shanghai", arrivalDate, departureDate)
 
 		oneDay := time.Hour * 24
-		firstDaySinceArrival := arrival
+		firstDaySinceArrival := arrivalDate
 		secondDaySinceArrival := firstDaySinceArrival.Add(oneDay)
 		thirdDaySinceArrival := secondDaySinceArrival.Add(oneDay)
 		forthDaySinceArrival := thirdDaySinceArrival.Add(oneDay)
@@ -68,12 +69,12 @@ var _ = Describe("when get free rooms", func() {
 		r.AddRoom("shanghai")
 
 		// When
-		arrival, _ := time.Parse("2006-1-2", "2020-10-20")
-		departure, _ := time.Parse("2006-1-2", "2020-10-23")
-		r.BookRoom("shanghai", arrival, departure)
+		arrivalDate := utils.DateFor("2020-10-20")
+		departureDate := utils.DateFor("2020-10-23")
+		r.BookRoom("shanghai", arrivalDate, departureDate)
 
-		wantArrival, _ := time.Parse("2006-1-2", "2020-10-21")
-		wantDeparture, _ := time.Parse("2006-1-2", "2020-10-22")
+		wantArrival := utils.DateFor("2020-10-21")
+		wantDeparture := utils.DateFor("2020-10-22")
 		freeRooms := r.FreeRooms(wantArrival, wantDeparture)
 
 		// Then
@@ -86,12 +87,12 @@ var _ = Describe("when get free rooms", func() {
 		r.AddRoom("shanghai")
 
 		// When
-		arrival, _ := time.Parse("2006-1-2", "2020-10-20")
-		departure, _ := time.Parse("2006-1-2", "2020-10-26")
-		r.BookRoom("shanghai", arrival, departure)
+		arrivalDate := utils.DateFor("2020-10-20")
+		departureDate := utils.DateFor("2020-10-26")
+		r.BookRoom("shanghai", arrivalDate, departureDate)
 
-		wantArrival, _ := time.Parse("2006-1-2", "2020-10-19")
-		wantDeparture, _ := time.Parse("2006-1-2", "2020-10-22")
+		wantArrival := utils.DateFor("2020-10-19")
+		wantDeparture := utils.DateFor("2020-10-22")
 		freeRooms := r.FreeRooms(wantArrival, wantDeparture)
 
 		// Then
