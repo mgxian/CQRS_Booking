@@ -40,30 +40,7 @@ var _ = Describe("when get free rooms", func() {
 		Expect(freeRooms).ShouldNot(ConsistOf(room_read_registry.NewRoom("shanghai")))
 	})
 
-	It("room is not free on everyday from arrival date to departure date", func() {
-		// Given
-		r := room_read_registry.NewInMemoryRoomReadRegistry()
-		r.AddRoom("shanghai")
-
-		// When
-		arrivalDate := utils.DateFor("2020-10-20")
-		departureDate := utils.DateFor("2020-10-23")
-		r.BookRoom("shanghai", arrivalDate, departureDate)
-
-		oneDay := time.Hour * 24
-		firstDaySinceArrival := arrivalDate
-		secondDaySinceArrival := firstDaySinceArrival.Add(oneDay)
-		thirdDaySinceArrival := secondDaySinceArrival.Add(oneDay)
-		forthDaySinceArrival := thirdDaySinceArrival.Add(oneDay)
-
-		// Then
-		Expect(r.IsRoomFreeOn("shanghai", firstDaySinceArrival)).Should(Equal(false))
-		Expect(r.IsRoomFreeOn("shanghai", secondDaySinceArrival)).Should(Equal(false))
-		Expect(r.IsRoomFreeOn("shanghai", thirdDaySinceArrival)).Should(Equal(false))
-		Expect(r.IsRoomFreeOn("shanghai", forthDaySinceArrival)).Should(Equal(true))
-	})
-
-	It("room is not free when one day booking date between arrival date and departure date", func() {
+	It("room is not free for one day booking when room already booked", func() {
 		// Given
 		r := room_read_registry.NewInMemoryRoomReadRegistry()
 		r.AddRoom("shanghai")
@@ -81,7 +58,7 @@ var _ = Describe("when get free rooms", func() {
 		Expect(freeRooms).ShouldNot(ConsistOf(room_read_registry.NewRoom("shanghai")))
 	})
 
-	It("room is not free when more than one day booking date between arrival date and departure date", func() {
+	It("room is not free for more than one day booking when room already booked", func() {
 		// Given
 		r := room_read_registry.NewInMemoryRoomReadRegistry()
 		r.AddRoom("shanghai")

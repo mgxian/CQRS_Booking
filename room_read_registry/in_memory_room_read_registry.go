@@ -28,7 +28,7 @@ func (i *InMemoryRoomReadRegistry) IsRoomFree(room string, arrival, departure ti
 	bookedDate := arrival
 	oneDay := time.Hour * 24
 	for bookedDate.Before(departure) {
-		if !i.IsRoomFreeOn(room, bookedDate) {
+		if !i.isRoomFreeOn(room, bookedDate) {
 			return false
 		}
 		bookedDate = bookedDate.Add(oneDay)
@@ -56,7 +56,7 @@ func (i *InMemoryRoomReadRegistry) BookRoom(name string, arrival, departure time
 	}
 }
 
-func (i *InMemoryRoomReadRegistry) IsRoomFreeOn(room string, date time.Time) bool {
+func (i *InMemoryRoomReadRegistry) isRoomFreeOn(room string, date time.Time) bool {
 	if booked, ok := i.freeRooms[room][date]; ok {
 		return !booked
 	}
