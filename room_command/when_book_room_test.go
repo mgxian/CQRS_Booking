@@ -24,7 +24,7 @@ var _ = Describe("when book room", func() {
 		ctrl.Finish()
 	})
 
-	It("notify room read registry and room write registry", func() {
+	It("should notify room read registry and room write registry", func() {
 		arrivalDate := utils.DateFor("2020-10-21")
 		departureDate := utils.DateFor("2020-10-21")
 		booking := room_command.NewBooking("will", "shanghai", arrivalDate, departureDate)
