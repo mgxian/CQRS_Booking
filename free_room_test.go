@@ -51,4 +51,9 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^the free rooms should contains the (.*) room$`, freeRoomFeature.theFreeRoomsContainsRoom)
 	ctx.Step(`^the free rooms should not contains the (.*) room$`, freeRoomFeature.theFreeRoomsNotContainsRoom)
 
+	bookRoomFeature := &bookRoomFeature{}
+	ctx.Step(`^the (.*) room$`, bookRoomFeature.givenRoom)
+	ctx.Step(`^the (.*) room is free arrival at (\d+-\d+-\d+) and departure at (\d+-\d+-\d+)$`, bookRoomFeature.theRoomIsFree)
+	ctx.Step(`^(.*) book the (.*) room arrival at (\d+-\d+-\d+) and departure at (\d+-\d+-\d+)$`, bookRoomFeature.bookRoom)
+	ctx.Step(`^the (.*) room is not free arrival at (\d+-\d+-\d+) and departure at (\d+-\d+-\d+)$`, bookRoomFeature.theRoomIsNotFree)
 }
