@@ -6,7 +6,7 @@ package room_command_test
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	room_command "kata/cqrs_booking/room_command"
+	"kata/cqrs_booking/room_write_registry"
 	reflect "reflect"
 )
 
@@ -34,7 +34,7 @@ func (m *MockRoomWriteRegistry) EXPECT() *MockRoomWriteRegistryMockRecorder {
 }
 
 // BookRoom mocks base method
-func (m *MockRoomWriteRegistry) BookRoom(booking room_command.Booking) {
+func (m *MockRoomWriteRegistry) BookRoom(booking room_write_registry.Booking) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "BookRoom", booking)
 }

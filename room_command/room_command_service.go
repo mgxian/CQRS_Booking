@@ -2,7 +2,7 @@ package room_command
 
 import (
 	"kata/cqrs_booking/room_query"
-	"time"
+	"kata/cqrs_booking/room_write_registry"
 )
 
 type RoomCommandService struct {
@@ -14,36 +14,12 @@ func NewRoomCommandService(rw RoomWriteRegistry, rr room_query.RoomReadRegistry)
 	return &RoomCommandService{rw, rr}
 }
 
-func (s *RoomCommandService) BookRoom(booking Booking) {
+func (s *RoomCommandService) BookRoom(booking room_write_registry.Booking) {
 	s.rw.BookRoom(booking)
 	s.rr.BookRoom(booking.Name(), booking.Arrival(), booking.Departure())
 }
 
 type RoomWriteRegistry interface {
-	BookRoom(booking Booking)
+	BookRoom(booking room_write_registry.Booking)
 }
 
-type Booking struct {
-	client, room       string
-	arrival, departure time.Time
-}
-
-func (b Booking) Arrival() time.Time {
-	return b.arrival
-}
-
-func (b Booking) Departure() time.Time {
-	return b.departure
-}
-
-func (b Booking) Name() string {
-	return b.room
-}
-
-func (b Booking) ClientID() string {
-	return b.client
-}
-
-func NewBooking(client, room string, arrival, departure time.Time) Booking {
-	return Booking{client, room, arrival, departure}
-}

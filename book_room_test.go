@@ -34,7 +34,7 @@ func (b *bookRoomFeature) RoomIsFree(room, arrivalDateString, departureDateStrin
 func (b *bookRoomFeature) BookRoom(client, room, arrivalDateString, departureDateString string) error {
 	arrivalDate := utils.DateFor(arrivalDateString)
 	departureDate := utils.DateFor(departureDateString)
-	booking := room_command.NewBooking(client, room, arrivalDate, departureDate)
+	booking := room_write_registry.NewBooking(client, room, arrivalDate, departureDate)
 	b.roomCommandService.BookRoom(booking)
 	return nil
 }
